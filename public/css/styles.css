@@ -1,0 +1,17 @@
+body {
+  background: url('/images/background.gif') fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+  -o-background-size: cover;
+}
+
+#main {
+  opacity: 0.6;
+}
+
+
+#main:hover {
+  opacity: 0.8;
+
+}
