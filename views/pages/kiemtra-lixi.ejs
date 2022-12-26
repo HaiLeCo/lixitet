@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('../partials/head'); %>
+</head>
+
+<body class="container">
+
+  <header>
+    <%- include('../partials/header'); %>
+  </header>
+
+
+  <div class="container" id="main">
+    <div class="card border-0 shadow my-5">
+      <div class="card-body p-5">
+        <h1 class="fw-light">Kiểm Tra Lì Xì</h1>
+
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Mệnh giá</th>
+              <th scope="col">Tổng</th>
+              <th scope="col">Đã lấy</th>
+              <th scope="col">Còn lại</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (var i = 0; i < listBaoLiXi.length; i++) { %>
+            <tr>
+              <th scope="row">Bao <%= listBaoLiXi[i].menhgia %> đ</th>
+              <td><%= listBaoLiXi[i].total%></td>
+              <td><%= listBaoLiXi[i].use%></td>
+              <td><%= listBaoLiXi[i].total - listBaoLiXi[i].use%></td>
+            </tr>
+            <% } %>
+            
+          </tbody>
+        </table>
+
+        <hr>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Key</th>
+              <th scope="col">isUsed</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (var i = 0; i < listKey.length; i++) { %>
+            <tr>
+              <th scope="row"><%= listKey[i].key %></th>
+              <td><%= listKey[i].isUsed%></td>
+            </tr>
+            <% } %>
+            
+          </tbody>
+        </table>
+
+
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <%- include('../partials/footer'); %>
+  </footer>
+</body>
+
+</html>

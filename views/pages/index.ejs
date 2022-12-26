@@ -16,7 +16,7 @@
     <div class="card border-0 shadow my-5">
       <div class="card-body p-5">
         <h1 class="fw-light">Lì Xì Tết 2023</h1>
-
+        <fieldset id='form-lixi'>
         <form class="needs-validation" novalidate>
 
           <div class="form-group mb-3">
@@ -43,17 +43,17 @@
           </div>
 
           <div class="form-check form-check-inline mb-3">
-            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="MOMO" checked>
+            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="momo" value="MOMO" checked>
             <label class="form-check-label" for="inlineRadio1">MOMO</label>
           </div>
           <div class="form-check form-check-inline mb-3">
-            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="Zalo-Pay">
+            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="zalo-pay" value="Zalo-Pay">
             <label class="form-check-label" for="inlineRadio2">Zalo Pay</label>
           </div>
 
           <div class="form-group mb-3">
             <label class="form-label">Nhận Lì xì qua số nào nè</label>
-            <input type="text" id="name" class="form-control" placeholder="Nhập số phone để nhận lì xì nè" required>
+            <input type="text" id="phoneNumber" class="form-control" placeholder="Nhập số phone để nhận lì xì nè" required>
             <div class="valid-feedback">
               Looks good!
             </div>
@@ -63,20 +63,23 @@
           </div>
 
 
-          <button type="submit" class="btn btn-primary">Lấy Lì Xì</button>
+          <button type="button" id="nhan-lixi" class="btn btn-primary">Lấy Lì Xì</button>
 
 
         </form>
-
+        </fieldset>
 
       </div>
     </div>
   </div>
-
+  <%- include('../partials/spinner'); %>
+  <%- include('../partials/errorModal'); %>
+  <%- include('../partials/modal-nhan-lixi'); %>
   <footer>
     <%- include('../partials/footer'); %>
   </footer>
   <script src="../scripts/validation.js"></script>
+  <script src="../scripts/index.js"></script>
 </body>
 
 </html>
