@@ -9,7 +9,7 @@ $(document).ready(function () {
       data:  JSON.stringify (data),
       success: function() { 
         $('#successModal').modal('show');
-        $(location).attr('href','/kiemtra-lixi')
+        $(location).attr('href','/ki3mtr4-l1x1')
       },
       error: function() {
         showError();
