@@ -12,7 +12,28 @@ app.use(bodyParser.json());
 const dbo = require('./db/conn');
 
 
+const ENV = process.env.ENVIRONMENT || "test";
+
+
+let DB_SOLUONGLIXI = 'soluonglixi';
+let DB_HISTORY = 'history';
+let DB_LIST_KEY = 'list-key';
+
+if (ENV == 'test') {
+  DB_SOLUONGLIXI = 'test-' + DB_SOLUONGLIXI;
+  DB_LIST_KEY = 'test-' + DB_LIST_KEY;
+  DB_HISTORY = 'test-' + DB_HISTORY;
+}
+
+
 /* Database */
+
+async function addHistory(data) {
+  const dbConnect = dbo.getDb();
+  const collection = dbConnect.collection('history');
+  await collection.insertOne(data);
+}
+
 async function findCollectionBy(colName, by, value) {
   const dbConnect = dbo.getDb();
   const collection = dbConnect.collection(colName);
@@ -28,11 +49,11 @@ async function getMenhGiaById(value) {
 
 async function themBaoLixi(data) {
   let menhgiaId = data.menhgiaId
-  var baoLiXi = await findCollectionBy('test-soluonglixi', 'menhgia_id', menhgiaId);
+  var baoLiXi = await findCollectionBy(DB_SOLUONGLIXI, 'menhgia_id', menhgiaId);
   console.log(baoLiXi)
   let result;
   const dbConnect = dbo.getDb();
-  const collection = dbConnect.collection('test-soluonglixi');
+  const collection = dbConnect.collection(DB_SOLUONGLIXI);
 
   if (baoLiXi != null) {
     console.log("THÊM VÔ SỐ LƯỢNG TOTAL");
@@ -53,7 +74,7 @@ async function themBaoLixi(data) {
 
 async function updateBaoLixi(menhgiaId) {
   const dbConnect = dbo.getDb();
-  const collection = dbConnect.collection('test-soluonglixi');
+  const collection = dbConnect.collection(DB_SOLUONGLIXI);
   let baolixi = await collection.findOne({ menhgia_id: menhgiaId }, { projection: { _id: 0 } });
   let use = baolixi.use + 1
   const result = await collection.updateOne({ menhgia_id: menhgiaId }, { $set: { use: use } });
@@ -64,7 +85,7 @@ async function getListKey() {
     const dbConnect = dbo.getDb();
     let listKey = [];
     dbConnect
-      .collection('test-list-key')
+      .collection(DB_LIST_KEY)
       .find({})
       .toArray(async function (err, result) {
         if (err) {
@@ -79,7 +100,7 @@ async function getListBaoLiXi() {
   return new Promise(function (resolve, reject) {
     const dbConnect = dbo.getDb();
     dbConnect
-      .collection('test-soluonglixi')
+      .collection(DB_SOLUONGLIXI)
       .find({})
       .toArray(async function (err, result) {
         if (err) {
@@ -91,19 +112,19 @@ async function getListBaoLiXi() {
 }
 
 async function getKey(key) {
-  return await findCollectionBy('test-list-key', 'key', key)
+  return await findCollectionBy(DB_LIST_KEY, 'key', key)
 }
 
 async function themKey(listKey) {
   const dbConnect = dbo.getDb();
-  const collection = dbConnect.collection('test-list-key');
+  const collection = dbConnect.collection(DB_LIST_KEY);
   result = await collection.insertMany(listKey);
   return result
 }
 
 async function updateKeyIsUsed(key) {
   const dbConnect = dbo.getDb();
-  const collection = dbConnect.collection('test-list-key');
+  const collection = dbConnect.collection(DB_LIST_KEY);
   const result = await collection.updateOne({ key: key }, { $set: { isUsed: true } });
 }
 
@@ -170,18 +191,15 @@ app.put('/nhan-lixi', async function (req, res) {
         // update Bao lì xì đã sử dụng
         await updateBaoLixi(lixiId)
 
-
         let menhGia = await getMenhGiaById(lixiId);
 
         //Send Email
-
         params = {
           nguoi_nhan_li_xi: body.name,
           lixi: menhGia,
           method: body.method,
           phoneNumber: body.phoneNumber
         }
-
         return res.status(200).send({
           name: body.name,
           key: key,
@@ -218,7 +236,7 @@ app.get('/', function (req, res) {
 });
 
 
-app.get('/them-lixi', function (req, res) {
+app.get('/th3m-l1x1', function (req, res) {
   const dbConnect = dbo.getDb();
   dbConnect
     .collection('menh-gia')
@@ -235,7 +253,7 @@ app.get('/them-lixi', function (req, res) {
     });
 });
 
-app.get('/kiemtra-lixi', async function (req, res) {
+app.get('/ki3mtr4-l1x1', async function (req, res) {
   let result = await getListBaoLiXi();
   let listBaoLiXi = [];
   for (var i = 0; i < result.length; i++) {
