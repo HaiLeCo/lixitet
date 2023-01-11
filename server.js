@@ -1,41 +1,43 @@
 var express = require('express');
 var app = express();
+
 require('dotenv').config()
+
 const bodyParser = require('body-parser');
 const { v4: uuidv4 } = require('uuid');
-
 
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
 const dbo = require('./db/conn');
-
-
 const ENV = process.env.ENVIRONMENT || "test";
+
+const KIEM_TRA_PATH = 'ki3mtr4-l1x1';
+const THEM_PATH = 'th3m-l1x1';
+
 
 
 let DB_SOLUONGLIXI = 'soluonglixi';
 let DB_HISTORY = 'history';
 let DB_LIST_KEY = 'list-key';
-
+let DB_MENHGIA = 'menh-gia';
+let dbConnect;
 if (ENV == 'test') {
   DB_SOLUONGLIXI = 'test-' + DB_SOLUONGLIXI;
   DB_LIST_KEY = 'test-' + DB_LIST_KEY;
   DB_HISTORY = 'test-' + DB_HISTORY;
 }
 
-
 /* Database */
 
 async function addHistory(data) {
-  const dbConnect = dbo.getDb();
-  const collection = dbConnect.collection('history');
+  const collection = dbConnect.collection(DB_HISTORY);
   await collection.insertOne(data);
 }
 
 async function findCollectionBy(colName, by, value) {
-  const dbConnect = dbo.getDb();
   const collection = dbConnect.collection(colName);
   var query = {};
   query[by] = value;
@@ -43,7 +45,7 @@ async function findCollectionBy(colName, by, value) {
 }
 
 async function getMenhGiaById(value) {
-  let menhgia = await findCollectionBy('menh-gia', 'id', value)
+  let menhgia = await findCollectionBy(DB_MENHGIA, 'id', value)
   return menhgia['menh-gia']
 }
 
@@ -52,7 +54,6 @@ async function themBaoLixi(data) {
   var baoLiXi = await findCollectionBy(DB_SOLUONGLIXI, 'menhgia_id', menhgiaId);
   console.log(baoLiXi)
   let result;
-  const dbConnect = dbo.getDb();
   const collection = dbConnect.collection(DB_SOLUONGLIXI);
 
   if (baoLiXi != null) {
@@ -73,7 +74,6 @@ async function themBaoLixi(data) {
 }
 
 async function updateBaoLixi(menhgiaId) {
-  const dbConnect = dbo.getDb();
   const collection = dbConnect.collection(DB_SOLUONGLIXI);
   let baolixi = await collection.findOne({ menhgia_id: menhgiaId }, { projection: { _id: 0 } });
   let use = baolixi.use + 1
@@ -82,8 +82,6 @@ async function updateBaoLixi(menhgiaId) {
 
 async function getListKey() {
   return new Promise(function (resolve, reject) {
-    const dbConnect = dbo.getDb();
-    let listKey = [];
     dbConnect
       .collection(DB_LIST_KEY)
       .find({})
@@ -98,7 +96,6 @@ async function getListKey() {
 
 async function getListBaoLiXi() {
   return new Promise(function (resolve, reject) {
-    const dbConnect = dbo.getDb();
     dbConnect
       .collection(DB_SOLUONGLIXI)
       .find({})
@@ -116,20 +113,17 @@ async function getKey(key) {
 }
 
 async function themKey(listKey) {
-  const dbConnect = dbo.getDb();
   const collection = dbConnect.collection(DB_LIST_KEY);
   result = await collection.insertMany(listKey);
   return result
 }
 
 async function updateKeyIsUsed(key) {
-  const dbConnect = dbo.getDb();
   const collection = dbConnect.collection(DB_LIST_KEY);
   const result = await collection.updateOne({ key: key }, { $set: { isUsed: true } });
 }
 
 /* API */
-
 app.post('/api-them-lixi', async function (req, res) {
   const body = req.body;
   let result = true
@@ -139,11 +133,9 @@ app.post('/api-them-lixi', async function (req, res) {
     }
   }
 
-  console.log(`Before Complete ${result}`)
   if (result) {
     return res.status(200).send({})
   } else {
-    console.log(result)
     return res.status(400).send({ msg: result })
   }
 
@@ -151,9 +143,7 @@ app.post('/api-them-lixi', async function (req, res) {
 
 app.put('/nhan-lixi', async function (req, res) {
   const body = req.body;
-
   var key = body.key;
-
   let checkKey = await getKey(key);
 
   if (!checkKey) {
@@ -165,9 +155,7 @@ app.put('/nhan-lixi', async function (req, res) {
 
       // List hết bao lì xì ra
       let listBaoLiXi = await getListBaoLiXi();
-
-      console.log(listBaoLiXi)
-      // Lựa những bao còn giá trị cho zô 1 list
+      // Lựa những bao còn giá available cho zô 1 list
       let listLiXiId = [];
       for (var i = 0; i < listBaoLiXi.length; i++) {
         if (listBaoLiXi[i].total - listBaoLiXi[i].use > 0) {
@@ -183,9 +171,6 @@ app.put('/nhan-lixi', async function (req, res) {
         // Random chọn 1 bao
         const lixiId = listLiXiId[Math.floor(Math.random() * listLiXiId.length)];
 
-        console.log(listLiXiId)
-        console.log(`Lì xì ${lixiId}`)
-
         // Update key đã sử dụng
         await updateKeyIsUsed(key)
         // update Bao lì xì đã sử dụng
@@ -193,13 +178,24 @@ app.put('/nhan-lixi', async function (req, res) {
 
         let menhGia = await getMenhGiaById(lixiId);
 
-        //Send Email
+        //Param to Send Email
         params = {
           nguoi_nhan_li_xi: body.name,
           lixi: menhGia,
           method: body.method,
           phoneNumber: body.phoneNumber
         }
+
+        await addHistory({
+          name: body.name,
+          key: key,
+          method: body.method,
+          phoneNumber: body.phoneNumber,
+          lixi: menhGia,
+          message: body.message,
+          params: params
+        })
+
         return res.status(200).send({
           name: body.name,
           key: key,
@@ -222,22 +218,11 @@ app.put('/nhan-lixi', async function (req, res) {
 
 /* ROUTE */
 app.get('/', function (req, res) {
-  var mascots = [
-    { name: 'Sammy', organization: "DigitalOcean", birth_year: 2012 },
-    { name: 'Tux', organization: "Linux", birth_year: 1996 },
-    { name: 'Moby Dock', organization: "Docker", birth_year: 2013 }
-  ];
-  var tagline = "No programming concept is complete without a cute animal mascot.";
-
-  res.render('pages/index', {
-    mascots: mascots,
-    tagline: tagline
-  });
+  res.render('pages/index');
 });
 
 
-app.get('/th3m-l1x1', function (req, res) {
-  const dbConnect = dbo.getDb();
+app.get(`/${THEM_PATH}`, function (req, res) {
   dbConnect
     .collection('menh-gia')
     .find({})
@@ -253,7 +238,7 @@ app.get('/th3m-l1x1', function (req, res) {
     });
 });
 
-app.get('/ki3mtr4-l1x1', async function (req, res) {
+app.get(`/${KIEM_TRA_PATH}`, async function (req, res) {
   let result = await getListBaoLiXi();
   let listBaoLiXi = [];
   for (var i = 0; i < result.length; i++) {
@@ -280,17 +265,13 @@ app.get('/ki3mtr4-l1x1', async function (req, res) {
   for (var i = 0; i < listBaoLiXi.length; i++) {
     totalBaoLiXi += listBaoLiXi[i].total - listBaoLiXi[i].use
   }
-  console.log(`Total Bao Lì Xì ${totalBaoLiXi}`)
-  console.log(`Total Key ${listKey.length}`)
+
   let numberOfNewKey = totalBaoLiXi - listKey.length
-  console.log(`Đang bị thiếu ${numberOfNewKey} số key`)
+
   if (numberOfNewKey > 0) {
     let listNewKeys = []
     // Update Key cho khớp với số bao lì xì
-    /* Generate UUID */
-
     for (var i = 0; i < totalBaoLiXi; i++) {
-
       listNewKeys.push(
         {
           key: uuidv4().split('-')[0],
@@ -322,4 +303,5 @@ dbo.connectToServer(function (err) {
   app.listen(PORT, () => {
     console.log(`Server is running on port: ${PORT}`);
   });
+  dbConnect = dbo.getDb();
 });
