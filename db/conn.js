@@ -2,6 +2,7 @@ const { MongoClient } = require("mongodb");
 require('dotenv').config()
 
 const connectionString = process.env.ATLAS_URI;
+const DB_NAME = process.env.DB_NAME;
 const client = new MongoClient(connectionString, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -16,7 +17,7 @@ module.exports = {
         return callback(err);
       }
 
-      dbConnection = db.db("lixi-tet");
+      dbConnection = db.db(DB_NAME);
       console.log("Successfully connected to MongoDB.");
 
       return callback();
