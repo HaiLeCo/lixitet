@@ -63,16 +63,16 @@ showError = (msg) => {
 showNhanLiXiModal = (data) => {
   $('.icon-box').css('background', "#fff52e")
   $('#nhan-lixi-modal').modal('show');
-  $('#congrat-name').text(`Chúc mừng ${data.name} đã nhận được lì xì`)
-  $('#lixi-content').text(`${data.lixi}đ qua ${data.method}`)
+  $('#congrat-name').text('Chúc mừng năm mới')
+  $('#lixi-content').text(`Chúc mừng ${data.name} đã nhận được lì xì ${data.lixi}đ qua ${data.method}`)
 }
 
 function getData() {
   let key = $('#key').val();
   let name = $('#name').val();
   let phoneNumber = $('#phoneNumber').val();
-
-  if (key === '' || name === '' || phoneNumber === '') {
+  let message = $('#message').val();
+  if (key === '' || name === '' || phoneNumber === '' || message === '') {
     flagFail = true;
     showError('Sao không chịu điền thông tin vô')
   } else {
@@ -90,6 +90,7 @@ function getData() {
     name: name,
     method: method,
     phoneNumber: phoneNumber,
+    message: message,
     flag: flagFail
   };
 }
