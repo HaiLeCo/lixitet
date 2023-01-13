@@ -72,6 +72,10 @@ async function getAllMenhGia() {
   return await findCollectionBy(DB_MENHGIA, "id", null);
 }
 
+async function getHistory() {
+  return await findCollectionBy(DB_HISTORY, "id", null);
+}
+
 async function themBaoLixi(data) {
   let menhgiaId = data.menhgiaId;
   var baoLiXi = await findCollectionBy(DB_SOLUONGLIXI, "menhgia_id", menhgiaId);
@@ -401,6 +405,17 @@ app.get(`/${THEM_PATH}`, function (req, res) {
     });
 });
 */
+
+app.get(`/history`, async function (req, res) {
+  var token = req.query.token;
+  if (token != TOKEN) {
+    return res.render("pages/ops");
+  }
+  let history = await getHistory();
+  return res.render("pages/history", {
+    history: history,
+  });
+});
 
 app.get(`/${KIEM_TRA_PATH}`, async function (req, res) {
   var token = req.query.token;
