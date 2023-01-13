@@ -3,6 +3,7 @@
 
 <head>
   <%- include('../partials/head'); %>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
 </head>
 
 <body class="container">
@@ -17,7 +18,7 @@
       <div class="card-body p-5">
         <h1 class="fw-light">Kiểm Tra Lì Xì</h1>
 
-        <table class="table table-hover">
+        <table class="table table-hover" id="bao-lixi">
           <thead>
             <tr>
               <th scope="col">Mệnh giá</th>
@@ -28,19 +29,23 @@
           </thead>
           <tbody>
             <% for (var i = 0; i < listBaoLiXi.length; i++) { %>
-            <tr>
+            <tr menhgia-id="<%= listBaoLiXi[i].menhgiaId %>" =>
               <th scope="row">Bao <%= listBaoLiXi[i].menhgia %> đ</th>
-              <td><%= listBaoLiXi[i].total%></td>
-              <td><%= listBaoLiXi[i].use%></td>
+              <td>
+                <input class="form-control" value="<%=listBaoLiXi[i].total%>" minlength="0" placeholder='total'>
+              </td>
+              <td>
+                <input class="form-control" value="<%=listBaoLiXi[i].use%>" minlength="0" placeholder='use'>
+              </td>
               <td><%= listBaoLiXi[i].total - listBaoLiXi[i].use%></td>
             </tr>
             <% } %>
             
           </tbody>
         </table>
-
-        <hr>
-        <table class="table table-hover">
+       <button id='save' class="pull-right btn btn-success">Save</button>
+        <br>
+        <table class="table table-hover" id="table-key">
           <thead>
             <tr>
               <th scope="col">Key</th>
@@ -50,14 +55,29 @@
           <tbody>
             <% for (var i = 0; i < listKey.length; i++) { %>
             <tr>
-              <th scope="row"><%= listKey[i].key %></th>
-              <td><%= listKey[i].isUsed%></td>
+              <th scope="row" data-id="<%= listKey[i].key %>">
+                <input class="form-control" value="<%= listKey[i].key %>"placeholder='Key'>
+              </th>
+              <td>
+                <select class="form-select" aria-label="<%=listKey[i].isUsed%>">
+                  <%if (listKey[i].isUsed) { %>
+                       <option value="true" selected>true</option>
+                       <option value="false">false</option>
+                  <% } else { %>
+                       <option value="true">true</option>
+                       <option value="false" selected>false</option>
+                  <% } %>
+
+                </select>
+              
+              </td>
             </tr>
             <% } %>
             
           </tbody>
         </table>
-
+<button id="add_row" class="btn btn-primary pull-left">Add Key</button>
+<button id='save_key' class="pull-right btn btn-primary">Save</button>
 
       </div>
     </div>
@@ -66,6 +86,9 @@
   <footer>
     <%- include('../partials/footer'); %>
   </footer>
+  <script src="../scripts/kiemtra.js"></script>
+  <%- include('../partials/errorModal'); %>
+  <%- include('../partials/successModal'); %>
 </body>
 
 </html>
