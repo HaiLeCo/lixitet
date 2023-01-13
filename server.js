@@ -403,8 +403,11 @@ app.get(`/${THEM_PATH}`, function (req, res) {
 */
 
 app.get(`/${KIEM_TRA_PATH}`, async function (req, res) {
+  var token = req.query.token;
+  if (token != TOKEN) {
+    return res.render("pages/ops");
+  }
   let listBaoLiXi = [];
-
   result = await getAllMenhGia();
   for (var i = 0; i < result.length; i++) {
     let baolixi = await findCollectionBy(
