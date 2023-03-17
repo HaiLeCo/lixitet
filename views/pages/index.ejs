@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('../partials/head'); %>
+</head>
+
+<body class="container">
+
+  <header>
+    <%- include('../partials/header'); %>
+  </header>
+
+
+  <div class="container" id="main">
+    <div class="card border-0 shadow my-5">
+      <div class="card-body p-5">
+        <h1 class="fw-light">Lì Xì Tết 2023</h1>
+        <fieldset id='form-lixi'>
+        <form class="needs-validation" novalidate>
+
+          <div class="form-group mb-3">
+            <label class="form-label">Code của bạn</label>
+            <input type="text" id="key" class="form-control" placeholder="Code bạn nhận được" required>
+            <div class="valid-feedback">
+              Looks good!
+            </div>
+            <div class="invalid-feedback">
+              Điền KEY đi chứ chời :D
+            </div>
+          </div>
+
+
+          <div class="form-group mb-3">
+            <label class="form-label">Tên của bạn</label>
+            <input type="text" id="name" class="form-control" placeholder="Nhập Tên vô đi nè" required>
+            <div class="valid-feedback">
+              Looks good!
+            </div>
+            <div class="invalid-feedback">
+              Lại quên nhập tên rồi :(
+            </div>
+          </div>
+
+          <div class="form-check form-check-inline mb-3">
+            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="momo" value="MOMO" checked>
+            <label class="form-check-label" for="inlineRadio1">MOMO</label>
+          </div>
+          <div class="form-check form-check-inline mb-3">
+            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="zalo-pay" value="Zalo-Pay">
+            <label class="form-check-label" for="inlineRadio2">Zalo Pay</label>
+          </div>
+
+          <div class="form-group mb-3">
+            <label class="form-label">Nhận Lì xì qua số nào nè</label>
+            <input type="text" id="phoneNumber" class="form-control" placeholder="Nhập số phone để nhận lì xì nè" required>
+            <div class="valid-feedback">
+              Looks good!
+            </div>
+            <div class="invalid-feedback">
+              Ráng nhập nốt số điện thoại đi mà
+            </div>
+          </div>
+          
+           <div class="form-group mb-3">
+            <label class="form-label">Chúc gì đó đi ^^</label>
+            <textarea type="text" id="message" class="form-control" rows="3" required></textarea>
+            <div class="valid-feedback">
+              Looks good!
+            </div>
+            <div class="invalid-feedback">
+              Chúc gì đó đi ^^
+            </div>
+          </div>
+
+
+          <button type="button" id="nhan-lixi" class="btn btn-primary">Lấy Lì Xì</button>
+
+
+        </form>
+        </fieldset>
+
+      </div>
+    </div>
+  </div>
+  <%- include('../partials/spinner'); %>
+  <%- include('../partials/errorModal'); %>
+  <%- include('../partials/modal-nhan-lixi'); %>
+  <footer>
+    <%- include('../partials/footer'); %>
+  </footer>
+  <script src="../scripts/validation.js"></script>
+  <script src="../scripts/index.js"></script>
+</body>
+
+</html>
